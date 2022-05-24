@@ -35,8 +35,7 @@
     shipping: {
       street: {string, mandatory},
       city: {string, mandatory},
-      pincode: {number, mandatory}
-    },
+      pincode: {number, mandatory}c
     billing: {
       street: {string, mandatory},
       city: {string, mandatory},
