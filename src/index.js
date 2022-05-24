@@ -1,12 +1,12 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const multer=require('multer')
 const route = require('./routes/route.js');
 const { default: mongoose } = require('mongoose');
 const app = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(multer().any())
 
 mongoose.connect("mongodb+srv://Laxmi_Dobhal:MPY5xYd5tUMu48w2@cluster0.su5lt.mongodb.net/group3Database", {
     useNewUrlParser: true
@@ -14,8 +14,10 @@ mongoose.connect("mongodb+srv://Laxmi_Dobhal:MPY5xYd5tUMu48w2@cluster0.su5lt.mon
 .then( () => console.log("MongoDb is connected"))
 .catch ( err => console.log(err) )
 
+let str="abc"
+str.charAt
 
-app.use('/', route)
+app.use('/', route);
 
 
 app.listen(process.env.PORT || 3000, function () {
