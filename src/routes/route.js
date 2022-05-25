@@ -1,23 +1,31 @@
 const express = require('express')
 const router = express.Router();
-const aws=require('aws-sdk')
-const {registerUser} =require('../controllers/userController')
-
- aws.config.update({
-     credentials: {
-         accessKeyId:"AKIAY3L35MCRUJ6WPO6J",
-         secretAccessKey:"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"
-     },
-    region: 'ap-south-1'
- })
+const {createuser,login,getuserdata,updateUserById} = require("../controllers/usercontroller");
+const {authentication} =require('../middlewares/auth')
 
 
-router.post('/',function(req,res){
-    return res.send("Welcome to main route api!")
+//user Register
+router.post("/register", createuser)
+router.post('/login', login)
+router.get('/user/:userId/profile', authentication, getuserdata)
+router.put('/user/:userId/profile', authentication, updateUserById)
+
+
+
+//If url is Incorrect
+router.post("*", (req, res) => {
+
+    return res.status(404).send({ message: "Page Not Found" })
+})
+router.get("*", (req, res) => {
+    return res.status(404).send({ message: "Page Not Found" })
+})
+router.put("*", (req, res) => {
+    return res.status(404).send({ message: "Page Not Found" })
 })
 
+router.delete("*", (req, res) => {
+    return res.status(404).send({ message: "Page Not Found" })
+})
 
-router.post('/register', registerUser)
-
-
-module.exports=router;
+module.exports = router;
