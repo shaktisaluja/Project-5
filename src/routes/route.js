@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router();
 const {createUser,login,getUserData,updateUserById} = require("../controllers/usercontroller");
 const {authentication,authorization} =require('../middlewares/auth')
+const {createProduct} = require("../controllers/productController");
 
 
 //user Register

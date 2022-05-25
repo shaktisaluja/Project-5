@@ -1,5 +1,5 @@
 const ProductModel = require("../models/productModel")
-const {validateFeild, validateStreet } = require("../utilities/validation");
+const {validateStreet } = require("../utilities/validation");
 const mongoose = require('mongoose')
 const {uploadFile} = require('../utilities/uploadFile');
 const productModel = require("../models/productModel");
@@ -74,11 +74,11 @@ const createProduct = async (req, res) => {
               }
             }
 
-          if (availableSizes) {
+          if (data.availableSizes) {
     let validSize = ["S", "XS","M","X", "L","XXL", "XL"];
-    for (let i = 0; i < availableSizes.length; i++)
-    console.log(availableSizes)
-    if (!validSize.includes(availableSizes[i].trim())){
+    for (let i=0;i<data.availableSizes.length;i++)
+    console.log(data.availableSizes)
+    if (!validSize.includes(data.availableSizes[i])){
     return res.status(400).send({ status: false, message: "AvailableSizes should be of S,XS,M,X, L,XXL,XL" });
     }
         }
