@@ -34,20 +34,25 @@ const validateNumber = (Feild) => {
 };
 
 
-//VALIDATION OF pincode BY REJEX
+//VALIDATION OF PINCODE BY REJEX
 const validatePincode = (pincode) => {
   return String(pincode).trim().match(
     /^(\d{4}|\d{6})$/);
 };
 
+//VALIDATION OF OBJECT ID
 let isValidObjectId = (value) => {
   return objectId.isValid(value)
 };
 
+let isValidBody= (value) => {
+  if(Object.keys(value)===0) return false;
+  return true;
+}
 /*  //VALIDATION OF logolink BY REJEX
 const validateprofileImage= (Image) => {
   return String(Image).trim().match
   (/^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$/);
 }; */
 
-module.exports = { validateEmail, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId }
+module.exports = { validateEmail, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId,isValidBody }

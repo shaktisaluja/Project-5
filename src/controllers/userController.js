@@ -1,5 +1,5 @@
 const userModel = require("../Models/usermodel")
-const { validateEmail, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId } = require("../utilities/validation");
+const { validateEmail, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId, isValidBody } = require("../utilities/validation");
 const mongoose = require('mongoose')
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -9,11 +9,11 @@ const {uploadFile} = require('../utilities/uploadFile')
 //.............................................PHASE (1) Create user................................................
 
 
-const createuser = async (req, res) => {
+const createUser = async (req, res) => {
   try {
     const data = req.body;
-    if (Object.keys(data).length == 0) {
-      return res.status(400).send({ status: false, message: "Feild Can't Empty.Please Enter Some Details" });
+    if (!isValidBody(data)) {
+      return res.status(400).send({ status: false, message: "Field can't be empty. Please enter some details" });
     }
 
     if (!data.fname) {
@@ -151,7 +151,7 @@ const login = async function (req, res) {
   try {
     const data = req.body;
 
-    if (Object.keys(data).length == 0) {
+    if (!isValidBody(data)) {
       return res.status(400).send({ status: false, message: "Feild Can't Empty.Please Enter Some Details" }); //details is given or not
     }
 
@@ -193,7 +193,7 @@ const login = async function (req, res) {
 
 //.................................................getuser/:userId/profile.............................................
 
-const getuserdata = async function (req, res) {
+const getUserData = async function (req, res) {
   try {
 
     const userId = req.params.userId;
@@ -377,4 +377,4 @@ const updateUserById = async function (req, res) {
 }
 
 
-module.exports = { createuser, login, getuserdata, updateUserById }
+module.exports = { createUser, login, getUserData, updateUserById }

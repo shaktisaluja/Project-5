@@ -1,15 +1,14 @@
 const express = require('express')
 const router = express.Router();
-const {createuser,login,getuserdata,updateUserById} = require("../controllers/usercontroller");
-const {authentication} =require('../middlewares/auth')
+const {createUser,login,getUserData,updateUserById} = require("../controllers/usercontroller");
+const {authentication,authorization} =require('../middlewares/auth')
 
 
 //user Register
-router.post("/register", createuser)
+router.post("/register", createUser)
 router.post('/login', login)
-router.get('/user/:userId/profile', authentication, getuserdata)
-router.put('/user/:userId/profile', authentication, updateUserById)
-
+router.get('/user/:userId/profile', authentication,authorization, getUserData)
+router.put('/user/:userId/profile', authentication,authorization, updateUserById)
 
 
 //If url is Incorrect
