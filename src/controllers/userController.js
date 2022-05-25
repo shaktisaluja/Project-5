@@ -1,4 +1,4 @@
-const userModel = require("../Models/usermodel")
+const userModel = require("../Models/userModel")
 const { validateEmail, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId } = require("../utilities/validation");
 const mongoose = require('mongoose')
 const jwt = require("jsonwebtoken");
