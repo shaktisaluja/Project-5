@@ -49,10 +49,21 @@ let isValidBody= (value) => {
   if(Object.keys(value).length===0) return false;
   return true;
 }
+
+
+//Image file Validation
+const isFileImage = (file) => {
+  let ext = ['png', 'jpg', 'jpeg']
+  let fileExt = file.originalname.split('.')
+  console.log(fileExt)
+  return ext.includes(fileExt[fileExt.length-1])
+}
+
+
 /*  //VALIDATION OF logolink BY REJEX
 const validateprofileImage= (Image) => {
   return String(Image).trim().match
   (/^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$/);
 }; */
 
-module.exports = { validateEmail, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId,isValidBody }
+module.exports = { validateEmail, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId,isValidBody ,isFileImage}

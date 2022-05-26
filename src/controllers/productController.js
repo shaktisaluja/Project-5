@@ -2,7 +2,6 @@ const ProductModel = require("../models/productModel")
 const {validateStreet } = require("../utilities/validation");
 const mongoose = require('mongoose')
 const {uploadFile} = require('../utilities/uploadFile');
-const productModel = require("../models/productModel");
 
 
 //.............................................PHASE (2) POST /products................................................
@@ -49,10 +48,12 @@ const createProduct = async (req, res) => {
         }
 
          if (typeof (price) != "Number" && price<0) {
+           /*  console.log(typeof price) */
             return res.status(400).send({ status: false, message: "Invalid Price Format" });
           }
 
-        if(data.currencyId){
+        if(currencyId){
+             console.log(typeof currencyId)
             if(currencyId.trim().toUpperCase()!="INR" ){
                 return res.status(400).send({ status: false, message: "Invalid CurrencyId" });
          }
@@ -64,7 +65,8 @@ const createProduct = async (req, res) => {
          }
         }
          if(isFreeShipping){
-       if(typeof (isFreeShipping)!="boolean"){
+             console.log(typeof isFreeShipping)
+       if(typeof (isFreeShipping)!="Boolean"){
             return res.status(400).send({ status: false, message: "Invalid isFreeShipping Format.It must be true or false" });
         }
         }
@@ -76,15 +78,16 @@ const createProduct = async (req, res) => {
 
           if (data.availableSizes) {
     let validSize = ["S", "XS","M","X", "L","XXL", "XL"];
-    for (let i=0;i<data.availableSizes.length;i++)
+   for (let i=0;i<=data.availableSizes.length;i++)
     console.log(data.availableSizes)
-    if (!validSize.includes(data.availableSizes[i])){
+    if (!validSize.includes(data.availableSizes)){
     return res.status(400).send({ status: false, message: "AvailableSizes should be of S,XS,M,X, L,XXL,XL" });
     }
         }
 
 
      if (installments) {
+        console.log(typeof installments)
             if(typeof(installments)!="Number" && installments<0 ){
                 return res.status(400).send({ status: false, message: "Invalid installments Format" });
 

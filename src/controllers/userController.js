@@ -1,5 +1,5 @@
 const userModel = require("../Models/userModel")
-const { validateEmail, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId, isValidBody } = require("../utilities/validation");
+const { validateEmail,isFileImage, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId, isValidBody } = require("../utilities/validation");
 const mongoose = require('mongoose')
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -11,7 +11,9 @@ const {uploadFile} = require('../utilities/uploadFile')
 
 const createUser = async (req, res) => {
   try {
-    const data = req.body;
+    /* const data = req.body; */
+    let data = JSON.parse(JSON.stringify(req.body))
+    /*  let body = JSON.parse(JSON.stringify(req.body)) */
     if (!isValidBody(data)) {
       return res.status(400).send({ status: false, message: "Field can't be empty. Please enter some details" });
     }
@@ -69,6 +71,7 @@ const createUser = async (req, res) => {
       return res.status(400).send({ status: false, message: "Password is missing" });
     }
 
+
     if (!validatePassword(data.password)) {
       return res.status(400).send({ status: false, message: "Password Must contain at-least One number,One special character,One capital letter & length Should be 8-15", }); //password validation
     }
@@ -78,6 +81,7 @@ const createUser = async (req, res) => {
     if (!data.address) {
       return res.status(400).send({ status: false, message: "Plase Provide Address" });
     }
+    data.address = JSON.parse(data.address)
 
 
     if (!data.address.shipping) {
@@ -129,14 +133,20 @@ const createUser = async (req, res) => {
     }
 
     let files = req.files
+    if(!files && !files.length){
+      return res.status(400).send({ msg: "File is Required" })
+    }
     if (files && files.length > 0) {
+      let check = isFileImage(req.files[0])
+      if(!check)
+      return res.status(400).send({ status: false, message: 'Invalid file, image only allowed', });
+    }
+
       let dirName="profileImage_v01";
       let uploadedFileURL = await uploadFile(files[0],dirName)
       data.profileImage = uploadedFileURL
-    }
-    else {
-      return res.status(400).send({ msg: "No file found" })
-    }
+
+
     const user = await userModel.create(data);
     return res.status(201).send({ status: true, message: "User created successfully", data: user });
   }
