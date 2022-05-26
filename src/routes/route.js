@@ -8,7 +8,7 @@ const {createProduct} = require("../controllers/productController");
 //user Register
 router.post("/register", createUser)
 router.post('/login', login)
-router.get('/user/:userId/profile', authentication,authorization, getUserData)
+router.get('/user/:userId/profile', authentication, getUserData)
 router.put('/user/:userId/profile', authentication,authorization, updateUserById)
 
 //Product

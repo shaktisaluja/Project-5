@@ -103,18 +103,22 @@ const createProduct = async (req, res) => {
         }
       }
 
-
-        let files = req.files
-       if (files && files.length > 0) {
+      let files = req.files
+      if(!req.files.length){
+        return res.status(400).send({ msg: "File is Required" })
+      }
+      if (req.files.length) {
+        let check = isFileImage(req.files[0])
+        if(!check)
+        return res.status(400).send({ status: false, message: 'Invalid file, image only allowed', });
+      }
       let dirName="productImage_v01";
       let uploadedFileURL = await uploadFile(files[0],dirName)
       data.productImage = uploadedFileURL
-    }
-    else {
-      return res.status(400).send({ msg: "No file found" })
-    }
 
-         const Product = await productModel.create(data);
+
+
+     const Product = await productModel.create(data);
       return res.status(201).send({ status: true, message: "Product created successfully", data:Product });
     }
 
