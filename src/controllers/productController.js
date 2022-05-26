@@ -1,5 +1,5 @@
 const productModel = require("../models/productModel")
-const { validateStreet, isValidBody, isValidCurrency, isValidCurrencyFormat, isValidSize, isValidNumber, isValid, isFileImage } = require("../utilities/validation");
+const { validateStreet, isValidBody, isValidCurrency, isValidCurrencyFormat, isValidSize, isValidNumber, isValid, isFileImage, isValidBoolean } = require("../utilities/validation");
 const mongoose = require('mongoose')
 const { uploadFile } = require('../utilities/uploadFile')
 
@@ -69,9 +69,8 @@ const createProduct = async (req, res) => {
       }
     }
 
-    if (isFreeShipping) {
-      console.log(typeof isFreeShipping)
-      if (typeof (isFreeShipping) != "Boolean") {
+    if (isFreeShipping == "" || isFreeShipping) {
+      if (!isValidBoolean(isFreeShipping)) {
         return res.status(400).send({ status: false, message: "Invalid isFreeShipping Format.It must be true or false" });
       }
     }
@@ -83,11 +82,10 @@ const createProduct = async (req, res) => {
     }
 
     if (data.availableSizes) {
-      //  for (let i = 0; i <= data.availableSizes.length; i++)
-      //   console.log(data.availableSizes)
       if (!isValidSize(availableSizes)) {
         return res.status(400).send({ status: false, message: "AvailableSizes should be of S,XS,M,X, L,XXL,XL" });
       }
+      data.availableSizes = data.availableSizes.trim().split(",").map(ele => ele.trim())
     }
 
 
@@ -98,21 +96,24 @@ const createProduct = async (req, res) => {
     }
 
     if (isDeleted) {
-      if (typeof (isDeleted) != "boolean") {
-        return res.status(400).send({ status: false, message: "Invalid Input of isDeleted.It must be true or false " });
+      if (!isValidBoolean(isDeleted)) {
+        return res.status(400).send({ status: false, message: "Invalid input of isDeleted.It must be true or false " });
       }
-      if (isDeleted == true) {
+      if (isDeleted == "true" || isDeleted ==true) {
         return res.status(400).send({ status: false, message: "isDeleted must be false while creating Product" });
       }
     }
 
+    if (!req.files) {
+      return res.status(400).send({ msg: "File is Required" })
+    }
     let files = req.files
     if (!files.length) return res.status(400).send({ msg: "File is Required" })
     let check = isFileImage(files[0])
-    if (!check) return res.status(400).send({ status: false, message: 'Invalid file, image only allowed'})
+    if (!check) return res.status(400).send({ status: false, message: 'Invalid file, image only allowed' })
     let dirName = "productImage_v01";
     let uploadedFileURL = await uploadFile(files[0], dirName)
-    if(!uploadedFileURL) return res.status(404).send({ status: false, message: 'No file found'})
+    if (!uploadedFileURL) return res.status(404).send({ status: false, message: 'No file found' })
     data.productImage = uploadedFileURL
 
     const product = await productModel.create(data);
@@ -124,10 +125,11 @@ const createProduct = async (req, res) => {
   }
 }
 
+
 let getProduct = async function (req, res) {
 
   let reqParams = req.query
-  
+
   if (!isValidBody(reqParams)) {
 
     let findProduct = await productModel.find({ isDeleted: false }).sort({ price: 1 })
@@ -142,36 +144,38 @@ let getProduct = async function (req, res) {
 
     let { size, name, priceGreaterThan, priceLessThan } = reqParams
 
+    const filter = { isDeleted: false }
+
     if (size == "" || size) {
       if (!isValidSize(size)) return res.status(400).send({ status: false, message: "Not a valid size" })
+      let sizeArr = size.trim().split(",").map(ele => ele.trim())
+      filter["availableSizes"] = { $all: sizeArr }
     }
 
     if (name == "" || name) {
       if (!isValid(name)) return res.status(400).send({ status: false, message: "Not a valid name" })
+      filter["title"] = name;
     }
 
-    if (priceGreaterThan == "" || priceGreaterThan) {
+    if (priceGreaterThan == "" || (priceGreaterThan && !priceLessThan)) {
       if (!isValidNumber(priceGreaterThan)) return res.status(400).send({ status: false, message: "Not a valid prize" })
-    }
-
-    if (priceLessThan == "" || priceLessThan) {
+      filter["price"] = { $gt: Number(priceGreaterThan) }
+    } else if (priceLessThan == "" || (priceLessThan && !priceGreaterThan)) {
       if (!isValidNumber(priceLessThan)) return res.status(400).send({ status: false, message: "Not a valid prize" })
+      filter["price"] = { $lt: Number(priceLessThan) };
+    } else if (priceGreaterThan && priceLessThan) {
+      filter["price"] = { $gt: Number(priceGreaterThan), $lt: Number(priceLessThan) }
     }
 
-    priceGreaterThan = Number(priceGreaterThan)
-    priceLessThan = Number(priceLessThan)
-    let filterProduct = await productModel.find({ isDeleted: false, title: name, $or: [{ price: { $gt: priceGreaterThan } }, { price: { $lt: priceLessThan } }, { $and: [{price: {$gt: priceGreaterThan} }, { price:{$lt: priceLessThan} }] }] }).sort({ price: 1 })
+    filterProduct = await productModel.find(filter).sort({ price: 1 })
 
     if (!isValidBody(filterProduct)) return res.status(404).send({ status: false, message: "Product not found" })
 
-    if (filterProduct) {
-      return res.status(200).send({ status: true, message: "successfull", data: filterProduct })
-    }
+    return res.status(200).send({ status: true, message: "successfull", data: filterProduct })
 
   }
 
-
 }
 
-module.exports = {createProduct,getProduct}
+module.exports = { createProduct, getProduct }
 
