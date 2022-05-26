@@ -1,7 +1,7 @@
 const productModel = require("../models/productModel")
-const { validateStreet, isValidBody, isValidCurrency, isValidCurrencyFormat, isValidBoolean, isValidSize, isValidNumber, isValid } = require("../utilities/validation");
+const { validateStreet, isValidBody, isValidCurrency, isValidCurrencyFormat, isValidSize, isValidNumber, isValid, isFileImage } = require("../utilities/validation");
 const mongoose = require('mongoose')
-const { uploadedFileURL } = require('../utilities/uploadFile')
+const { uploadFile } = require('../utilities/uploadFile')
 
 
 //.............................................PHASE (2) POST /products................................................
@@ -32,7 +32,7 @@ const createProduct = async (req, res) => {
       return res.status(400).send({ status: false, message: "Invalid Title", });
     }
 
-    const findtitle = await ProductModel.findOne({ title: title }); //title exist or not
+    const findtitle = await productModel.findOne({ title: title }); //title exist or not
 
 
     if (findtitle) {
@@ -58,43 +58,42 @@ const createProduct = async (req, res) => {
     }
 
     if (currencyId) {
-      if (currencyId.trim().toUpperCase() != "INR") {
+      if (!isValidCurrency(currencyId)) {
         return res.status(400).send({ status: false, message: "Invalid CurrencyId" });
       }
     }
 
-    if (currencyFormat) {
-      if (currencyFormat.trim() != "₹") {
+    if (currencyFormat == "" || currencyFormat) {
+      if (!isValidCurrencyFormat(currencyFormat)) {
         return res.status(400).send({ status: false, message: "Invalid currencyFormat" });
       }
     }
+
     if (isFreeShipping) {
       console.log(typeof isFreeShipping)
       if (typeof (isFreeShipping) != "Boolean") {
         return res.status(400).send({ status: false, message: "Invalid isFreeShipping Format.It must be true or false" });
       }
     }
-    if (style) {
+
+    if (style == "" || style) {
       if (!validateStreet(style)) {
         return res.status(400).send({ status: false, message: "Invalid Style Format", });
       }
     }
 
     if (data.availableSizes) {
-      let validSize = ["S", "XS", "M", "X", "L", "XXL", "XL"];
-      for (let i = 0; i <= data.availableSizes.length; i++)
-        console.log(data.availableSizes)
-      if (!validSize.includes(data.availableSizes)) {
+      //  for (let i = 0; i <= data.availableSizes.length; i++)
+      //   console.log(data.availableSizes)
+      if (!isValidSize(availableSizes)) {
         return res.status(400).send({ status: false, message: "AvailableSizes should be of S,XS,M,X, L,XXL,XL" });
       }
     }
 
 
-    if (installments) {
-      console.log(typeof installments)
-      if (typeof (installments) != "Number" && installments < 0) {
+    if (installments == "" || installments) {
+      if (!isValidNumber(installments)) {
         return res.status(400).send({ status: false, message: "Invalid installments Format" });
-
       }
     }
 
@@ -107,26 +106,72 @@ const createProduct = async (req, res) => {
       }
     }
 
-
     let files = req.files
-    if (files && files.length > 0) {
-      let dirName = "productImage_v01";
-      let uploadedFileURL = await uploadFile(files[0], dirName)
-      data.productImage = uploadedFileURL
-    }
-    else {
-      return res.status(400).send({ msg: "No file found" })
-    }
+    if (!files.length) return res.status(400).send({ msg: "File is Required" })
+    let check = isFileImage(files[0])
+    if (!check) return res.status(400).send({ status: false, message: 'Invalid file, image only allowed'})
+    let dirName = "productImage_v01";
+    let uploadedFileURL = await uploadFile(files[0], dirName)
+    if(!uploadedFileURL) return res.status(404).send({ status: false, message: 'No file found'})
+    data.productImage = uploadedFileURL
 
-    const Product = await productModel.create(data);
-    return res.status(201).send({ status: true, message: "Product created successfully", data: Product });
+    const product = await productModel.create(data);
+    return res.status(201).send({ status: true, message: "Product created successfully", data: product });
+
   }
-
   catch (err) {
     res.status(500).send({ status: false, error: err.message });
   }
-};
+}
+
+let getProduct = async function (req, res) {
+
+  let reqParams = req.query
+  
+  if (!isValidBody(reqParams)) {
+
+    let findProduct = await productModel.find({ isDeleted: false }).sort({ price: 1 })
+
+    if (!isValidBody(findProduct)) return res.status(404).send({ status: false, message: "Product not found" })
+
+    if (findProduct) {
+      return res.status(200).send({ status: true, message: "successfull", data: findProduct })
+    }
+  }
+  else if (isValidBody(reqParams)) {
+
+    let { size, name, priceGreaterThan, priceLessThan } = reqParams
+
+    if (size == "" || size) {
+      if (!isValidSize(size)) return res.status(400).send({ status: false, message: "Not a valid size" })
+    }
+
+    if (name == "" || name) {
+      if (!isValid(name)) return res.status(400).send({ status: false, message: "Not a valid name" })
+    }
+
+    if (priceGreaterThan == "" || priceGreaterThan) {
+      if (!isValidNumber(priceGreaterThan)) return res.status(400).send({ status: false, message: "Not a valid prize" })
+    }
+
+    if (priceLessThan == "" || priceLessThan) {
+      if (!isValidNumber(priceLessThan)) return res.status(400).send({ status: false, message: "Not a valid prize" })
+    }
+
+    priceGreaterThan = Number(priceGreaterThan)
+    priceLessThan = Number(priceLessThan)
+    let filterProduct = await productModel.find({ isDeleted: false, title: name, $or: [{ price: { $gt: priceGreaterThan } }, { price: { $lt: priceLessThan } }, { $and: [{price: {$gt: priceGreaterThan} }, { price:{$lt: priceLessThan} }] }] }).sort({ price: 1 })
+
+    if (!isValidBody(filterProduct)) return res.status(404).send({ status: false, message: "Product not found" })
+
+    if (filterProduct) {
+      return res.status(200).send({ status: true, message: "successfull", data: filterProduct })
+    }
+
+  }
 
 
-module.exports.createProduct = createProduct
+}
+
+module.exports = {createProduct,getProduct}
 
