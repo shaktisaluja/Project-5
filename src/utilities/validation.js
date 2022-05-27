@@ -98,7 +98,9 @@ let isValidBoolean = (value) => {
 
 //Validating size
 let isValidSize = (value) => {
-  value=value.trim().split(",").map(ele=>ele.trim())
+  if(typeof value == "string"){
+    value=value.trim().split(",").map(ele=>ele.trim())
+  }
   let validSize = ["S", "XS", "M", "X", "L", "XXL", "XL"];
   for(let i=0;i<value.length;i++){
     if (!validSize.includes(value[i])) return false;
@@ -106,10 +108,5 @@ let isValidSize = (value) => {
   return true;
 }
 
-/*  //VALIDATION OF logolink BY REJEX
-const validateprofileImage= (Image) => {
-  return String(Image).trim().match
-  (/^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$/);
-}; */
 
 module.exports = { validateEmail, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId, isValidBody, isFileImage, isValidCurrency, isValidCurrencyFormat, isValidBoolean, isValidSize, isValid, isValidNumber, isNumber }

@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const { uploadFile } = require('../utilities/uploadFile')
 
 
-//.............................................PHASE (2) POST /products................................................
+//.............................................PHASE (2) Create product................................................
 
 
 const createProduct = async (req, res) => {
@@ -52,9 +52,9 @@ const createProduct = async (req, res) => {
     if (!price) {
       return res.status(400).send({ status: false, message: "Price Not Given" });
     }
-    console.log(typeof(price))
+    console.log(typeof (price))
     if (!isValidNumber(price)) {
-        console.log(isValidNumber(price))
+      console.log(isValidNumber(price))
 
       return res.status(400).send({ status: false, message: "Invalid Price Format" });
     }
@@ -128,6 +128,8 @@ const createProduct = async (req, res) => {
 }
 
 
+//.............................................PHASE (2) Get products................................................
+
 const getProduct = async function (req, res) {
 
   try {
@@ -182,6 +184,161 @@ const getProduct = async function (req, res) {
 
 }
 
+//.............................................PHASE (2) Get product by id................................................
+
+const getProductsById = async function (req, res) {
+  try {
+    let productId = req.params.productId
+
+    if (!isValidObjectId(productId)) {
+      return res.status(400).send({ status: false, message: "Product ID is Not Valid" });
+    }
+
+    const result = await productModel.findOne({ _id: productId, isDeleted: false })
+
+    if (!result) {
+      return res.status(404).send({ status: false, message: " Product Not found" })
+    }
+    res.status(200).send({ status: true, message: "Product", data: result })
+  } catch (err) {
+    res.status(500).send({ status: false, message: err.message })
+  }
+}
+
+
+//.............................................PHASE (2) Update product................................................
+
+const updateProduct = async function (req, res) {
+  try {
+
+    const productId = req.params.productId
+
+    let data;
+    if (req.body.data) {
+      data = JSON.parse(req.body.data)
+    } else {
+      data = req.body;
+    }
+
+
+    if (!isValidObjectId(productId)) {
+      return res.status(400).send({ status: false, message: "Please enter a valid Product id" })
+    }
+
+    if (!isValidBody(data)) {
+      if (!(isValidBody(req.files)))
+        return res.status(400).send({ status: false, message: "Please enter data to be updated" })
+    }
+
+    let { title, description, price, currencyId, currencyFormat, availableSizes, installments, isFreeShipping, style } = data
+
+    let checkProduct = await productModel.findOne({ _id: productId, isDeleted: true })
+    if (checkProduct) {
+      return res.status(404).send({ status: false, message: "Product not found" })
+    }
+
+    if (title == "" || title) {
+      if (!isValid(title)) {
+        return res.status(400).send({ status: false, message: "title is not valid" })
+      }
+    }
+
+    const titleUsed = await productModel.findOne({ title: title })
+    if (titleUsed) {
+      return res.status(400).send({ status: false, message: "title must be unique" })
+    }
+
+    if (description == "" || description || description == 0) {
+      if (!isValid(description)) {
+        return res.status(400).send({ status: false, message: "Not  valid description " })
+      }
+    }
+    if (price == "" || price) {
+      if (!isValidNumber(price))
+        return res.status(400).send({ status: false, message: "Not valid price" })
+    }
+
+    if (currencyId == "" || currencyId || currencyId == 0) {
+      if (!isValidCurrency(currencyId)) {
+        return res.status(400).send({ status: false, message: "currencyId should be  INR" })
+      }
+    }
+
+    if (currencyFormat == "" || currencyFormat || currencyFormat == 0) {
+      if (!isValidCurrencyFormat(currencyFormat)) {
+        return res.status(400).send({ status: false, message: "Not  a valid currency format" })
+      }
+    }
+
+    if (availableSizes == "" || availableSizes || availableSizes == 0) {
+
+      if (!isValidSize(availableSizes)) {
+        return res.status(400).send({ status: false, message: "Available Sizes should be from ['S', 'XS', 'M', 'X', 'L', 'XXL', 'XL']" })
+      }
+      if (typeof availableSizes == "string") {
+        availableSizes = availableSizes.trim().split(",").map(ele => ele.trim())
+      }
+    }
+
+    if (installments == "" || installments) {
+      if (!isValidNumber(installments))
+        return res.status(400).send({ status: false, message: "Not valid installments" })
+    }
+
+    if (style == "" || style || style == 0) {
+      if (!isValid(style)) {
+        return res.status(400).send({ status: false, message: "Not valid style" })
+      }
+    }
+
+    if (isFreeShipping == "" || isFreeShipping || isFreeShipping == 0) {
+      console.log(isFreeShipping)
+      if (!isValidBoolean(isFreeShipping)) {
+        return res.status(400).send({ status: false, message: "FreeShipping should be (true or false)" })
+      }
+    }
+
+    let uploadedFileURL
+    if (req.files) {
+      let files = req.files
+      if (files && files.length > 0) {
+        let check = isFileImage(files[0])
+        if (!check) return res.status(400).send({ status: false, message: 'Invalid file, image only allowed' })
+        let dirName = "productImage_v01";
+        uploadedFileURL = await uploadFile(files[0], dirName)
+        if (!uploadedFileURL) return res.status(404).send({ status: false, message: 'No file found' })
+      }
+    }
+
+    let updateData = {
+      title: title,
+      description: description,
+      price: price,
+      currencyId: currencyId,
+      isFreeShipping: isFreeShipping,
+      style: style,
+      availableSizes: availableSizes,
+      installments: installments,
+      productImage: uploadedFileURL
+    }
+
+    const productUpdated = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, { $set: updateData }, { new: true })
+
+    if (!productUpdated) {
+      return res.status(404).send({ status: false, message: "No Such Product exists" })
+    }
+
+    return res.status(200).send({ status: true, message: "Data Updated Succesfully", data: productUpdated })
+  }
+  catch (error) {
+    console.log(error)
+    return res.status(500).send({ status: false, message: error.message })
+  }
+
+}
+
+
+//.............................................PHASE (2) Delete product................................................
 
 
 const deleteProduct = async function (req, res) {
@@ -203,26 +360,6 @@ const deleteProduct = async function (req, res) {
 
 }
 
-const getProductsById = async function (req, res) {
-  try {
-    let productId = req.params.productId
 
-    if (!isValidObjectId(productId)) {
-      return res.status(400).send({ status: false, message: "Product ID is Not Valid" });
-    }
-
-    const result = await productModel.findOne({ _id: productId, isDeleted: false })
-   
-    if (!result) {
-      return res.status(404).send({ status: false, message: " Product Not found" })
-    }
-    res.status(200).send({ status: true, message: "Product", data: result })
-  } catch (err) {
-    res.status(500).send({ status: false, message: err.message })
-  }
-}
-
-
-
-module.exports = { createProduct, getProduct, deleteProduct ,getProductsById}
+module.exports = { createProduct, getProduct, deleteProduct, getProductsById, updateProduct }
 
