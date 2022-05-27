@@ -182,6 +182,8 @@ const getProduct = async function (req, res) {
 
 }
 
+
+
 const deleteProduct = async function (req, res) {
   try {
 
@@ -201,5 +203,26 @@ const deleteProduct = async function (req, res) {
 
 }
 
-module.exports = { createProduct, getProduct, deleteProduct }
+const getProductsById = async function (req, res) {
+  try {
+    let productId = req.params.productId
+
+    if (!isValidObjectId(productId)) {
+      return res.status(400).send({ status: false, message: "Product ID is Not Valid" });
+    }
+
+    const result = await productModel.findOne({ _id: productId, isDeleted: false })
+   
+    if (!result) {
+      return res.status(404).send({ status: false, message: " Product Not found" })
+    }
+    res.status(200).send({ status: true, message: "Product", data: result })
+  } catch (err) {
+    res.status(500).send({ status: false, message: err.message })
+  }
+}
+
+
+
+module.exports = { createProduct, getProduct, deleteProduct ,getProductsById}
 
