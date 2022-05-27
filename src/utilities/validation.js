@@ -66,7 +66,7 @@ let isValid = (value) => {
 
 //Checking value should be positive number
 let isValidNumber = (value) => {
-  if (typeof value == "number" && value < 0 || isNaN(value) || (typeof value == "string" && (Number(value.trim()) < 0 || value.trim().length == 0))) return false
+  if (typeof value == "number" && value < 0 || isNaN(value) || (typeof value == "string" && (Number(value.trim()) < 0|| value.trim().length == 0))) return false
   return true;
 }
 

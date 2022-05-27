@@ -52,11 +52,13 @@ const createProduct = async (req, res) => {
     if (!price) {
       return res.status(400).send({ status: false, message: "Price Not Given" });
     }
-
+    console.log(typeof(price))
     if (!isValidNumber(price)) {
+        console.log(isValidNumber(price))
+
       return res.status(400).send({ status: false, message: "Invalid Price Format" });
     }
-
+    console.log(isValidNumber(price))
     if (currencyId) {
       if (!isValidCurrency(currencyId)) {
         return res.status(400).send({ status: false, message: "Invalid CurrencyId" });
@@ -83,7 +85,7 @@ const createProduct = async (req, res) => {
 
     if (data.availableSizes) {
       if (!isValidSize(availableSizes)) {
-        return res.status(400).send({ status: false, message: "AvailableSizes should be of S,XS,M,X, L,XXL,XL" });
+        return res.status(400).send({ status: false, message: "AvailableSizes should be of S,XS,M,X,L,XXL,XL" });
       }
       data.availableSizes = data.availableSizes.trim().split(",").map(ele => ele.trim())
     }

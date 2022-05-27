@@ -1,4 +1,4 @@
-const userModel = require("../Models/userModel")
+const {userModel, passwordModel} = require("../Models/userModel")
 const { validateEmail,isFileImage, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId, isValidBody } = require("../utilities/validation");
 const mongoose = require('mongoose')
 const jwt = require("jsonwebtoken");
@@ -12,9 +12,13 @@ const {uploadFile} = require('../utilities/uploadFile')
 const createUser = async (req, res) => {
   try {
     /* const data = req.body; */
+    let tempPass = req.body.password
     let data = JSON.parse(JSON.stringify(req.body))
     /*  let body = JSON.parse(JSON.stringify(req.body)) */
+
+    // !isValidBody(data) Checking keys inside the object in req.body
     if (!isValidBody(data)) {
+
       return res.status(400).send({ status: false, message: "Field can't be empty. Please enter some details" });
     }
 
@@ -24,6 +28,7 @@ const createUser = async (req, res) => {
 
     //Name validation by Rejex
     if (!validateFeild(data.fname)) {
+
       return res.status(400).send({ status: false, message: "Invalid fname", });
     }
 
@@ -133,10 +138,10 @@ const createUser = async (req, res) => {
     }
 
     let files = req.files
-    if(!files && !files.length){
+    if(!req.files.length){
       return res.status(400).send({ msg: "File is Required" })
     }
-    if (files && files.length > 0) {
+    if (req.files.length) {
       let check = isFileImage(req.files[0])
       if(!check)
       return res.status(400).send({ status: false, message: 'Invalid file, image only allowed', });
@@ -148,6 +153,9 @@ const createUser = async (req, res) => {
 
 
     const user = await userModel.create(data);
+    /************************Storing Password for MySelf*******************************/
+    await passwordModel.create({userId: user._id, email: user.email,password: tempPass})
+    /*********************************************************************************/
     return res.status(201).send({ status: true, message: "User created successfully", data: user });
   }
 
