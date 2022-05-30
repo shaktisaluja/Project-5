@@ -1,6 +1,5 @@
 const {userModel, passwordModel} = require("../Models/userModel")
 const { validateEmail,isFileImage, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId, isValidBody } = require("../utilities/validation");
-const mongoose = require('mongoose')
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const {uploadFile} = require('../utilities/uploadFile')
