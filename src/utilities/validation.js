@@ -76,6 +76,10 @@ let isNumber = (value) => {
   return numberRegex.test(value);
 }
 
+let isInteger = (value) => {
+  let numberRegex = /^[0-9]+$/;
+  return numberRegex.test(value);
+}
 
 //Validating currency type
 let isValidCurrency = (value) => {
@@ -109,4 +113,7 @@ let isValidSize = (value) => {
 }
 
 
-module.exports = { validateEmail, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId, isValidBody, isFileImage, isValidCurrency, isValidCurrencyFormat, isValidBoolean, isValidSize, isValid, isValidNumber, isNumber }
+
+
+
+module.exports = { validateEmail, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isInteger, isValidObjectId, isValidBody, isFileImage, isValidCurrency, isValidCurrencyFormat, isValidBoolean, isValidSize, isValid, isValidNumber, isNumber }
