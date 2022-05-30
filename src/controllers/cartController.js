@@ -84,10 +84,6 @@ const updateCart = async function (req, res) {
 
 
             }
-
-            // else if (getCart.items[i].productId != productId && i >= getCart.items.length) {
-            //     return res.status(400).send({ status: false, message: "No product exist in cart for the requsted product id" })
-            // }
             
         }
 
