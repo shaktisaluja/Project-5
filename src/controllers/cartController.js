@@ -44,8 +44,15 @@ if (!findProductDetails) {
 
 if(quantity==0)return res.status(400).send({message:"Quantity should not be zer0"})
 const findCart= await cartModel.findOne({ userId: userId })
+const itemsMatch= await cartModel.findOne({ userId: userId }).select({items:1,_id:0})
 
-console.log(price* quantity)
+const productMatch=itemsMatch.items.map(x=>x.productId.toString())
+
+
+if(productMatch.includes(productId)){
+    await cartModel.findOneAndUpdate({userId:userId}  )
+}
+
 
 let product={
     productId:productId,
