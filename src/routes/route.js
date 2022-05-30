@@ -3,7 +3,7 @@ const router = express.Router();
 const { createUser, login, getUserData, updateUserById } = require("../controllers/usercontroller");
 const { authentication, authorization } = require('../middlewares/auth')
 const { createProduct, getProduct, deleteProduct, getProductsById, updateProduct } = require("../controllers/productController");
-const { createCart, updateCart } = require("../controllers/cartController")
+const { createCart, updateCart ,delCart }= require("../controllers/cartController")
 //const{createCart} =require("../controllers/cartController")
 
 //user Register
@@ -22,6 +22,7 @@ router.delete("/products/:productId", deleteProduct)
 //Cart
 router.post("/users/:userId/cart",createCart)
 router.put('/users/:userId/cart', updateCart)
+router.delete('/users/:userId/cart',delCart )
 
 
 //If url is Incorrect
