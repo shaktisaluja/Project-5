@@ -2,8 +2,9 @@ const express = require('express')
 const router = express.Router();
 const { createUser, login, getUserData, updateUserById } = require("../controllers/usercontroller");
 const { authentication, authorization } = require('../middlewares/auth')
-const { createProduct, getProduct, deleteProduct ,getProductsById,updateProduct} = require("../controllers/productController");
-const{createCart} =require("../controllers/cartController")
+const { createProduct, getProduct, deleteProduct, getProductsById, updateProduct } = require("../controllers/productController");
+const { createCart, updateCart } = require("../controllers/cartController")
+//const{createCart} =require("../controllers/cartController")
 
 //user Register
 router.post("/register", createUser)
@@ -14,13 +15,13 @@ router.put('/user/:userId/profile', authentication, authorization, updateUserByI
 //Product
 router.post("/products", createProduct)
 router.get("/products", getProduct)
-router.get("/products/:productId",getProductsById)
+router.get("/products/:productId", getProductsById)
 router.put("/products/:productId", updateProduct)
 router.delete("/products/:productId", deleteProduct)
 
-
-//cart
+//Cart
 router.post("/users/:userId/cart",createCart)
+router.put('/users/:userId/cart', updateCart)
 
 
 //If url is Incorrect
