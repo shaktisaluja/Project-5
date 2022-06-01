@@ -10,10 +10,10 @@ const { uploadFile } = require('../utilities/uploadFile')
 
 const createUser = async (req, res) => {
   try {
-    /* const data = req.body; */
+
     let tempPass = req.body.password
+
     let data = JSON.parse(JSON.stringify(req.body))
-    /*  let body = JSON.parse(JSON.stringify(req.body)) */
 
     // !isValidBody(data) Checking keys inside the object in req.body
     if (!isValidBody(data)) {
@@ -85,9 +85,9 @@ const createUser = async (req, res) => {
     if (!data.address) {
       return res.status(400).send({ status: false, message: "Plase Provide Address" });
     }
-  
+
     data.address = JSON.parse(data.address)
-   
+
     if (!data.address.shipping) {
       return res.status(400).send({ status: false, message: "Please Provide Shipping Address" });
     }
@@ -162,6 +162,8 @@ const createUser = async (req, res) => {
     res.status(500).send({ status: false, error: err.message });
   }
 };
+
+
 //.............................................POST /login........................................................
 
 const login = async function (req, res) {
@@ -194,7 +196,7 @@ const login = async function (req, res) {
 
     let token = jwt.sign(
       { "UserId": findemail._id },
-      "7dfcdb28dc1cea52f80fd28dca4124530b260c8b8f6afe2bb07b68441189738d3e464339a279ee42f726a488f8efa4c3cf57570977cd6d1a108a9b3943215375", { expiresIn: '2d' }  //sectetkey
+      process.env.SECRET_KEY, { expiresIn: '5h' }  //sectetkey
     );
 
     res.setHeader("x-api-key", token);
@@ -207,6 +209,7 @@ const login = async function (req, res) {
     res.status(500).send({ status: false, error: err.message });
   }
 };
+
 
 //.................................................getuser/:userId/profile.............................................
 
@@ -226,6 +229,7 @@ const getUserData = async function (req, res) {
     }
 
     const findUserDetails = await userModel.findOne({ _id: userId }).select({ address: 1, _id: 1, fname: 1, lname: 1, email: 1, profileImage: 1, phone: 1, password: 1, createdAt: 1, updatedAt: 1, __v: 1 });
+    console.log(typeof findUserDetails )
     if (!findUserDetails) {
       return res.status(404).send({ status: false, message: "User Not Found" });
     }
@@ -236,6 +240,7 @@ const getUserData = async function (req, res) {
     res.status(500).send({ status: false, message: err.message });
   }
 };
+
 
 //..............................................PUT /user/:userId/profile..........................................................
 
@@ -380,12 +385,12 @@ const updateUserById = async function (req, res) {
         let check = isFileImage(req.files[0])
         if (!check)
           return res.status(400).send({ status: false, message: 'Invalid file, image only allowed', })
-  
+
       let dirName = "profileImage_v01";
       let uploadedFileURL = await uploadFile(files[0], dirName)
       findUserDetails.profileImage = uploadedFileURL
       }
-     
+
 
     findUserDetails.save()
     return res.status(200).send({ status: true, message: "User Profile updated", data: findUserDetails })

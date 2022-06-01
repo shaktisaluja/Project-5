@@ -6,11 +6,11 @@ let authentication = function (req, res, next) {
         let token;
         let authorization = req.headers.authorization
 
-        if(!authorization) return res.status(400).send({ status: false, message: "Token is required" })
+        if (!authorization) return res.status(400).send({ status: false, message: "Token is required" })
 
         if (authorization && authorization.length > 0) {
             token = authorization.split(" ")[1]
-            jwt.verify(token, "7dfcdb28dc1cea52f80fd28dca4124530b260c8b8f6afe2bb07b68441189738d3e464339a279ee42f726a488f8efa4c3cf57570977cd6d1a108a9b3943215375", function (err, decodedToken) {
+            jwt.verify(token, process.env.SECRET_KEY, function (err, decodedToken) {
                 if (err) {
                     return res.status(401).send({ status: false, message: "Invalid token", Error: err })
                 } else {
@@ -30,7 +30,7 @@ let authorization = function (req, res, next) {
     //User id from params or from query
     let id = req.params.userId || req.query.userId
 
-    if (!isValidObjectId(id)) return res.status(400).send({status:false, message:"Not a valid user id"})
+    if (!isValidObjectId(id)) return res.status(400).send({ status: false, message: "Not a valid user id" })
 
     //User id from token
     let userId = req.user.UserId;
