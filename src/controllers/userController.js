@@ -246,6 +246,8 @@ const updateUserById = async function (req, res) {
 
     const userId = req.params.userId;
     let files = req.files
+    let data = JSON.parse(JSON.stringify(req.body)) 
+    console.log(data)
 
 
     if (!userId) {
@@ -262,28 +264,30 @@ const updateUserById = async function (req, res) {
       return res.status(404).send({ status: false, message: "User Not Found" });
     }
 
-    if (!req.body.fname && !req.body.lname && !req.body.email && !req.files && !req.body.phone && !req.body.password && !req.body.address) {
+    if (!data.fname && !data.lname && !data.email && !req.files && !data.phone && !data.password && !data.address) {
       return res.status(400).send({ status: false, message: "Please Provide data to update" })
     }
-
-    if (req.body.fname) {
-      findUserDetails.fname = req.body.fname
+    
+    if (data.fname) {
+      findUserDetails.fname = data.fname
+      console.log(findUserDetails.fname)
+     
 
 
       if (!validateFeild(findUserDetails.fname)) {
         return res.status(400).send({ status: false, message: "Invalid fname", });
       }
     }
-    if (req.body.lname) {
-      findUserDetails.lname = req.body.lname
+    if (data.lname) {
+      findUserDetails.lname = data.lname
 
       //Name validation by Rejex
       if (!validateFeild(findUserDetails.lname)) {
         return res.status(400).send({ status: false, message: "Invalid lname", });
       }
     }
-    if (req.body.email) {
-      findUserDetails.email = req.body.email
+    if (data.email) {
+      findUserDetails.email = data.email
 
       //email validation by Rejex
       if (!validateEmail(findUserDetails.email)) {
