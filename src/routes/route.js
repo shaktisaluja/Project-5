@@ -4,7 +4,7 @@ const { createUser, login, getUserData, updateUserById } = require("../controlle
 const { authentication, authorization } = require('../middlewares/auth')
 const { createProduct, getProduct, deleteProduct, getProductsById, updateProduct } = require("../controllers/productController");
 const { createCart, updateCart ,getCart,delCart } = require("../controllers/cartController")
-const{createOrder}=require("../controllers/orderController")
+const{createOrder,putOrder}=require("../controllers/orderController")
 //const{createCart} =require("../controllers/cartController")
 
 //user Register

@@ -5,7 +5,7 @@ const { isValidBody, isValidObjectId, isInteger } = require("../utilities/valida
 
 
 
-//********************************** POST /users/:userId/cart (Add to cart) *******************************************
+//...................................... POST /users/:userId/cart (Add to cart) ...........................................................
 
 const createCart = async function (req, res) {
     try {
@@ -25,10 +25,12 @@ const createCart = async function (req, res) {
         if (!isValidObjectId(productId)) {
             return res.status(400).send({ status: false, message: "Product Id is Not Valid" });
         }
+        if(cartId) {
 
-        // if (!isValidObjectId(cartId)){
-        //     return res.status(400).send({ status: false, message: "CART ID is Not Valid" });
-        // }
+        if (!isValidObjectId(cartId)){
+            return res.status(400).send({ status: false, message: "CART ID is Not Valid" });
+        }
+         }
 
         const findUserDetails = await userModel.findOne({ _id: userId })
         if (!findUserDetails) {
@@ -81,11 +83,11 @@ const createCart = async function (req, res) {
             const index = productMatch.indexOf(productId)
 
             if (productMatch.includes(productId)) {
-                const updateCart = await cartModel.findOneAndUpdate({ userId: userId }, { $inc: { [`items.${index}.quantity`]: quantity, totalPrice: price * quantity, totalItems: quantity } }, { new: true })
+                const updateCart = await cartModel.findOneAndUpdate({ userId: userId }, { $inc: { [`items.${index}.quantity`]: quantity, totalPrice: price * quantity } }, { new: true })
                 return res.status(201).send({ status: true, message: "Success", data: updateCart })
             }
             else if (!productMatch.includes(productId)) {
-                const updateCart = await cartModel.findOneAndUpdate({ userId: userId }, { $addToSet: { items: product }, $inc: { totalPrice: price * quantity, totalItems: quantity } }, { new: true })
+                const updateCart = await cartModel.findOneAndUpdate({ userId: userId }, { $addToSet: { items: product }, $inc: { totalPrice: price * quantity, totalItems: 1 } }, { new: true })
                 return res.status(201).send({ status: true, message: "Success", data: updateCart })
             }
 
