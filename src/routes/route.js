@@ -28,6 +28,8 @@ router.delete('/users/:userId/cart', authentication, authorization, delCart)
 
 //ordeer
 router.post("/users/:userId/orders",createOrder)
+router.put("/users/:userId/orders",putOrder)
+
 
 
 //If url is Incorrect

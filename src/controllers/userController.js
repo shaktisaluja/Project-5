@@ -85,9 +85,9 @@ const createUser = async (req, res) => {
     if (!data.address) {
       return res.status(400).send({ status: false, message: "Plase Provide Address" });
     }
-  
+
     data.address = JSON.parse(data.address)
-   
+
     if (!data.address.shipping) {
       return res.status(400).send({ status: false, message: "Please Provide Shipping Address" });
     }
@@ -226,6 +226,7 @@ const getUserData = async function (req, res) {
     }
 
     const findUserDetails = await userModel.findOne({ _id: userId }).select({ address: 1, _id: 1, fname: 1, lname: 1, email: 1, profileImage: 1, phone: 1, password: 1, createdAt: 1, updatedAt: 1, __v: 1 });
+    console.log(typeof findUserDetails )
     if (!findUserDetails) {
       return res.status(404).send({ status: false, message: "User Not Found" });
     }
@@ -376,12 +377,12 @@ const updateUserById = async function (req, res) {
         let check = isFileImage(req.files[0])
         if (!check)
           return res.status(400).send({ status: false, message: 'Invalid file, image only allowed', })
-  
+
       let dirName = "profileImage_v01";
       let uploadedFileURL = await uploadFile(files[0], dirName)
       findUserDetails.profileImage = uploadedFileURL
       }
-     
+
 
     findUserDetails.save()
     return res.status(200).send({ status: true, message: "User Profile updated", data: findUserDetails })
