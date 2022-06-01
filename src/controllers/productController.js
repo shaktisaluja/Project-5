@@ -47,13 +47,10 @@ const createProduct = async (req, res) => {
     if (!price) {
       return res.status(400).send({ status: false, message: "Price Not Given" });
     }
-    console.log(typeof (price))
+    
     if (!isValidNumber(price)) {
-      console.log(isValidNumber(price))
-
       return res.status(400).send({ status: false, message: "Invalid Price Format" });
     }
-    console.log(isValidNumber(price))
     if (currencyId) {
       if (!isValidCurrency(currencyId)) {
         return res.status(400).send({ status: false, message: "Invalid CurrencyId" });

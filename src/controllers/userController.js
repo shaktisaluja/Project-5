@@ -10,10 +10,10 @@ const { uploadFile } = require('../utilities/uploadFile')
 
 const createUser = async (req, res) => {
   try {
-    /* const data = req.body; */
+
     let tempPass = req.body.password
+
     let data = JSON.parse(JSON.stringify(req.body))
-    /*  let body = JSON.parse(JSON.stringify(req.body)) */
 
     // !isValidBody(data) Checking keys inside the object in req.body
     if (!isValidBody(data)) {
@@ -162,6 +162,8 @@ const createUser = async (req, res) => {
     res.status(500).send({ status: false, error: err.message });
   }
 };
+
+
 //.............................................POST /login........................................................
 
 const login = async function (req, res) {
@@ -208,6 +210,7 @@ const login = async function (req, res) {
   }
 };
 
+
 //.................................................getuser/:userId/profile.............................................
 
 const getUserData = async function (req, res) {
@@ -236,6 +239,7 @@ const getUserData = async function (req, res) {
     res.status(500).send({ status: false, message: err.message });
   }
 };
+
 
 //..............................................PUT /user/:userId/profile..........................................................
 
