@@ -4,13 +4,12 @@ const { userModel } = require("../Models/userModel")
 const { isValidBody, isValidObjectId, isInteger } = require("../utilities/validation");
 
 
-
-//********************************** POST /users/:userId/cart (Add to cart) *******************************************
+//...................................... POST /users/:userId/cart (Add to cart) ...........................................................
 
 const createCart = async function (req, res) {
     try {
         let userId = req.params.userId
-        let { productId, quantity } = req.body
+        let { productId, cartId, quantity } = req.body
 
         if (!isValidObjectId(userId)) {
             return res.status(400).send({ status: false, message: "User Id is Not Valid" });
@@ -24,6 +23,13 @@ const createCart = async function (req, res) {
 
         if (!isValidObjectId(productId)) {
             return res.status(400).send({ status: false, message: "Product Id is Not Valid" });
+        }
+        
+        if (cartId) {
+
+            if (!isValidObjectId(cartId)) {
+                return res.status(400).send({ status: false, message: "CART ID is Not Valid" });
+            }
         }
 
         const findUserDetails = await userModel.findOne({ _id: userId })
