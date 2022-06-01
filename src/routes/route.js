@@ -4,6 +4,7 @@ const { createUser, login, getUserData, updateUserById } = require("../controlle
 const { authentication, authorization } = require('../middlewares/auth')
 const { createProduct, getProduct, deleteProduct, getProductsById, updateProduct } = require("../controllers/productController");
 const { createCart, updateCart ,getCart,delCart } = require("../controllers/cartController")
+const{createOrder}=require("../controllers/orderController")
 //const{createCart} =require("../controllers/cartController")
 
 //user Register
@@ -20,12 +21,13 @@ router.put("/products/:productId", updateProduct)
 router.delete("/products/:productId", deleteProduct)
 
 //Cart
-router.post("/users/:userId/cart",createCart)
-router.put('/users/:userId/cart', updateCart)
-router.get('/users/:userId/cart', getCart)
-router.delete('/users/:userId/cart', delCart)
+router.post("/users/:userId/cart",authentication,authorization, createCart)
+router.put('/users/:userId/cart', authentication, authorization, updateCart)
+router.get('/users/:userId/cart', authentication, authorization, getCart)
+router.delete('/users/:userId/cart', authentication, authorization, delCart)
 
-
+//ordeer
+router.post("/users/:userId/orders",createOrder)
 
 
 //If url is Incorrect

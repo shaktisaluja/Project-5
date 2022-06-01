@@ -1,9 +1,8 @@
-const {userModel, passwordModel} = require("../Models/userModel")
-const { validateEmail,isFileImage, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId, isValidBody } = require("../utilities/validation");
-const mongoose = require('mongoose')
+const { userModel, passwordModel } = require("../Models/userModel")
+const { validateEmail, isFileImage, validatePassword, validateFeild, validateStreet, validateNumber, validatePincode, isValidObjectId, isValidBody } = require("../utilities/validation");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const {uploadFile} = require('../utilities/uploadFile')
+const { uploadFile } = require('../utilities/uploadFile')
 
 
 //.............................................PHASE (1) Create user................................................
@@ -86,9 +85,9 @@ const createUser = async (req, res) => {
     if (!data.address) {
       return res.status(400).send({ status: false, message: "Plase Provide Address" });
     }
+  
     data.address = JSON.parse(data.address)
-
-
+   
     if (!data.address.shipping) {
       return res.status(400).send({ status: false, message: "Please Provide Shipping Address" });
     }
@@ -138,23 +137,23 @@ const createUser = async (req, res) => {
     }
 
     let files = req.files
-    if(!req.files.length){
+    if (!req.files.length) {
       return res.status(400).send({ msg: "File is Required" })
     }
     if (req.files.length) {
       let check = isFileImage(req.files[0])
-      if(!check)
-      return res.status(400).send({ status: false, message: 'Invalid file, image only allowed', });
+      if (!check)
+        return res.status(400).send({ status: false, message: 'Invalid file, image only allowed', });
     }
 
-      let dirName="profileImage_v01";
-      let uploadedFileURL = await uploadFile(files[0],dirName)
-      data.profileImage = uploadedFileURL
+    let dirName = "profileImage_v01";
+    let uploadedFileURL = await uploadFile(files[0], dirName)
+    data.profileImage = uploadedFileURL
 
 
     const user = await userModel.create(data);
     /************************Storing Password for MySelf*******************************/
-    await passwordModel.create({userId: user._id, email: user.email,password: tempPass})
+    await passwordModel.create({ userId: user._id, email: user.email, password: tempPass })
     /*********************************************************************************/
     return res.status(201).send({ status: true, message: "User created successfully", data: user });
   }
@@ -195,7 +194,7 @@ const login = async function (req, res) {
 
     let token = jwt.sign(
       { "UserId": findemail._id },
-      "7dfcdb28dc1cea52f80fd28dca4124530b260c8b8f6afe2bb07b68441189738d3e464339a279ee42f726a488f8efa4c3cf57570977cd6d1a108a9b3943215375", { expiresIn: '5h' }  //sectetkey
+      "7dfcdb28dc1cea52f80fd28dca4124530b260c8b8f6afe2bb07b68441189738d3e464339a279ee42f726a488f8efa4c3cf57570977cd6d1a108a9b3943215375", { expiresIn: '2d' }  //sectetkey
     );
 
     res.setHeader("x-api-key", token);
@@ -377,17 +376,16 @@ const updateUserById = async function (req, res) {
       }
     }
 
-    if (req.files) {
-
-
-      if (files && req.files.length > 0) {
-        let uploadedFileURL = await uploadFile(files[0])
-        findUserDetails.profileImage = uploadedFileURL
+    if (req.files.length!==0) {
+        let check = isFileImage(req.files[0])
+        if (!check)
+          return res.status(400).send({ status: false, message: 'Invalid file, image only allowed', })
+  
+      let dirName = "profileImage_v01";
+      let uploadedFileURL = await uploadFile(files[0], dirName)
+      findUserDetails.profileImage = uploadedFileURL
       }
-      else {
-        return res.status(400).send({ msg: "No file found" })
-      }
-    }
+     
 
     findUserDetails.save()
     return res.status(200).send({ status: true, message: "User Profile updated", data: findUserDetails })

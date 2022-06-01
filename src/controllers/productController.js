@@ -10,12 +10,7 @@ const { uploadFile } = require('../utilities/uploadFile')
 const createProduct = async (req, res) => {
   try {
 
-    let data;
-    if (req.body.data) {
-      data = JSON.parse(req.body.data)
-    } else {
-      data = req.body;
-    }
+    let data = JSON.parse(JSON.stringify(req.body))
 
     if (!isValidBody(data)) {
       return res.status(400).send({ status: false, message: "Field can't not be empty.Please enter some details" });
@@ -213,13 +208,7 @@ const updateProduct = async function (req, res) {
 
     const productId = req.params.productId
 
-    let data;
-    if (req.body.data) {
-      data = JSON.parse(req.body.data)
-    } else {
-      data = req.body;
-    }
-
+    let data = JSON.parse(JSON.stringify(req.body))
 
     if (!isValidObjectId(productId)) {
       return res.status(400).send({ status: false, message: "Please enter a valid Product id" })
