@@ -190,7 +190,7 @@ const updateCart = async function (req, res) {
 
     }
 
-    else if (!getCart) return res.status(400).send({ status: false, message: "No cart exist" })
+    else if (!getCart) return res.status(404).send({ status: false, message: "No cart exist" })
 
 }
 

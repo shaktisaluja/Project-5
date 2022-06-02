@@ -22,25 +22,25 @@ const createUser = async (req, res) => {
     }
 
     if (!data.fname) {
-      return res.status(400).send({ status: false, message: "fname is missing" });
+      return res.status(400).send({ status: false, message: "first name is missing" });
     }
 
     //Name validation by Rejex
     if (!validateFeild(data.fname)) {
 
-      return res.status(400).send({ status: false, message: "Invalid fname", });
+      return res.status(400).send({ status: false, message: "Invalid first name", });
     }
 
     if (!data.lname) {
-      return res.status(400).send({ status: false, message: "lname is missing" });
+      return res.status(400).send({ status: false, message: "last name is missing" });
     }
 
     //Name validation by Rejex
     if (!validateFeild(data.lname)) {
-      return res.status(400).send({ status: false, message: "Invalid lname", });
+      return res.status(400).send({ status: false, message: "Invalid last name", });
     }
 
-    if (!validateFeild(data.lname.trim())) return res.status(400).send({ status: false, message: "Invalid lname! It Should Contain Only aplhabets" });
+    if (!validateFeild(data.lname.trim())) return res.status(400).send({ status: false, message: "Invalid last name! It Should Contain Only aplhabets" });
 
     if (!data.email) {
       return res.status(400).send({ status: false, message: "Email is missing" });
@@ -54,11 +54,11 @@ const createUser = async (req, res) => {
     const findemail = await userModel.findOne({ email: data.email }); //email exist or not
 
     if (findemail) {
-      return res.status(400).send({ status: false, message: `${data.email} Email Id  Already Registered.Please,Give Email ID` })
+      return res.status(400).send({ status: false, message: `${data.email} Email id  already registered.please,Give email ID` })
     }
 
     if (!data.phone) {
-      return res.status(400).send({ status: false, message: "Phone Number is missing" });
+      return res.status(400).send({ status: false, message: "Phone number is missing" });
     }
     //Phone no. validation by Rejex
     if (!validateNumber(data.phone)) {
@@ -68,7 +68,7 @@ const createUser = async (req, res) => {
     const findphoneno = await userModel.findOne({ phone: data.phone });
 
     if (findphoneno) {
-      return res.status(400).send({ status: false, message: `${data.phone} Phone no. Already Registered.Please,Give Another Phone.no` })
+      return res.status(400).send({ status: false, message: `${data.phone} Phone no. already registered.please,give another phone.no` })
     }
 
     if (!data.password) {
@@ -83,26 +83,26 @@ const createUser = async (req, res) => {
 
 
     if (!data.address) {
-      return res.status(400).send({ status: false, message: "Plase Provide Address" });
+      return res.status(400).send({ status: false, message: "Please provide address" });
     }
 
     data.address = JSON.parse(data.address)
 
     if (!data.address.shipping) {
-      return res.status(400).send({ status: false, message: "Please Provide Shipping Address" });
+      return res.status(400).send({ status: false, message: "Please provide shipping address" });
     }
     if (!data.address.shipping.street) {
-      return res.status(400).send({ status: false, message: "Please Provide street for shipping" });
+      return res.status(400).send({ status: false, message: "Please provide street for shipping" });
     }
     if (!validateStreet(data.address.street)) {
-      return res.status(400).send({ status: false, message: "Street must contain Alphabet or Number", });
+      return res.status(400).send({ status: false, message: "Street must contain alphabet or number", });
     }
     if (!data.address.shipping.city) {
-      return res.status(400).send({ status: false, message: "Please Provide City for shipping" });
+      return res.status(400).send({ status: false, message: "Please provide City for shipping" });
     }
 
     if (!validateFeild(data.address.shipping.city)) {
-      return res.status(400).send({ status: false, message: "Invalid City!It should not contain number" });
+      return res.status(400).send({ status: false, message: "Invalid city,it should not contain number" });
     }
 
     if (!data.address.shipping.pincode) {
@@ -113,32 +113,32 @@ const createUser = async (req, res) => {
     }
 
     if (!data.address.billing) {
-      return res.status(400).send({ status: false, message: "Please Provide Billing Address" });
+      return res.status(400).send({ status: false, message: "Please provide ailling address" });
     }
     if (!data.address.billing.street) {
-      return res.status(400).send({ status: false, message: "Please Provide street for Billing" });
+      return res.status(400).send({ status: false, message: "Please provide street for billing" });
     }
     if (!validateStreet(data.address.billing.street)) {
       return res.status(400).send({ status: false, message: "Invalid Street!", });
     }
     if (!data.address.billing.city) {
-      return res.status(400).send({ status: false, message: "Please Provide City for Billing" });
+      return res.status(400).send({ status: false, message: "Please provide City for billing" });
     }
     if (!validateFeild(data.address.billing.city)) {
-      return res.status(400).send({ status: false, message: "Invalid City!It should not contain number", });
+      return res.status(400).send({ status: false, message: "Invalid city!It should not contain number", });
     }
 
     if (!data.address.billing.pincode) {
-      return res.status(400).send({ status: false, message: "Please Provide Pincode for Billing" });
+      return res.status(400).send({ status: false, message: "Please provide pincode for billing" });
     }
 
     if (!validatePincode(data.address.billing.pincode)) {
-      return res.status(400).send({ status: false, message: "Invalid Pincode", });
+      return res.status(400).send({ status: false, message: "Invalid pincode", });
     }
 
     let files = req.files
     if (!req.files.length) {
-      return res.status(400).send({ msg: "File is Required" })
+      return res.status(400).send({ msg: "File is required" })
     }
     if (req.files.length) {
       let check = isFileImage(req.files[0])
@@ -171,7 +171,7 @@ const login = async function (req, res) {
     const data = req.body;
 
     if (!isValidBody(data)) {
-      return res.status(400).send({ status: false, message: "Feild Can't Empty.Please Enter Some Details" }); //details is given or not
+      return res.status(400).send({ status: false, message: "Field can't empty.please Enter some details" }); //details is given or not
     }
 
     let email = req.body.email;
@@ -187,7 +187,7 @@ const login = async function (req, res) {
     const findemail = await userModel.findOne({ email: email })
 
     if (!findemail)
-      return res.status(401).send({ status: false, message: "Email Not Found" });
+      return res.status(404).send({ status: false, message: "Email not found" });
 
 
     if (!bcrypt.compareSync(password, findemail.password)) {
@@ -199,9 +199,7 @@ const login = async function (req, res) {
       "7dfcdb28dc1cea52f80fd28dca4124530b260c8b8f6afe2bb07b68441189738d3e464339a279ee42f726a488f8efa4c3cf57570977cd6d1a108a9b3943215375", { expiresIn: '5h' }  //sectetkey
     );
 
-    res.setHeader("x-api-key", token);
-    /* let  details = JSON.parse(JSON.stringify(findemail._id))
-    details.token = token */
+    
     res.status(200).send({ status: true, message: "User login successfull", data: token });
   }
 
@@ -220,21 +218,21 @@ const getUserData = async function (req, res) {
 
 
     if (!userId) {
-      return res.status(400).send({ status: false, message: "Please Provide UserId" });
+      return res.status(400).send({ status: false, message: "Please provide userId" });
     }
 
     //check if objectId is valid objectid
     if (!isValidObjectId(userId)) {
-      return res.status(400).send({ status: false, message: "UserId is Not Valid" });
+      return res.status(400).send({ status: false, message: "UserId is not Valid" });
     }
 
     const findUserDetails = await userModel.findOne({ _id: userId }).select({ address: 1, _id: 1, fname: 1, lname: 1, email: 1, profileImage: 1, phone: 1, password: 1, createdAt: 1, updatedAt: 1, __v: 1 });
     console.log(typeof findUserDetails )
     if (!findUserDetails) {
-      return res.status(404).send({ status: false, message: "User Not Found" });
+      return res.status(404).send({ status: false, message: "user not found" });
     }
 
-    res.status(200).send({ status: true, data: findUserDetails })
+    res.status(200).send({ status: true, message :"User profile details", data: findUserDetails  })
   }
   catch (err) {
     res.status(500).send({ status: false, message: err.message });
@@ -260,7 +258,7 @@ const updateUserById = async function (req, res) {
 
     //check if objectId is valid objectid
     if (!isValidObjectId(userId)) {
-      return res.status(400).send({ status: false, message: "UserId is Not Valid" });
+      return res.status(400).send({ status: false, message: "UserId is not valid" });
     }
 
     const findUserDetails = await userModel.findOne({ _id: userId }).select({ address: 1, _id: 1, fname: 1, lname: 1, email: 1, profileImage: 1, phone: 1, password: 1, createdAt: 1, updatedAt: 1, __v: 1 });
@@ -274,12 +272,8 @@ const updateUserById = async function (req, res) {
     
     if (data.fname) {
       findUserDetails.fname = data.fname
-      console.log(findUserDetails.fname)
-     
-
-
       if (!validateFeild(findUserDetails.fname)) {
-        return res.status(400).send({ status: false, message: "Invalid fname", });
+        return res.status(400).send({ status: false, message: "Invalid first name", });
       }
     }
     if (data.lname) {
@@ -287,7 +281,7 @@ const updateUserById = async function (req, res) {
 
       //Name validation by Rejex
       if (!validateFeild(findUserDetails.lname)) {
-        return res.status(400).send({ status: false, message: "Invalid lname", });
+        return res.status(400).send({ status: false, message: "Invalid lastname", });
       }
     }
     if (data.email) {
@@ -295,13 +289,13 @@ const updateUserById = async function (req, res) {
 
       //email validation by Rejex
       if (!validateEmail(findUserDetails.email)) {
-        return res.status(400).send({ status: false, message: "Invaild E-mail id." });
+        return res.status(400).send({ status: false, message: "Invaild e-mail id." });
       }
 
       const findemail = await userModel.findOne({ email: req.body.email }); //email exist or not
 
       if (findemail) {
-        return res.status(400).send({ status: false, message: `${req.body.email} Email Id  Already Registered.Please,Give Email ID` })
+        return res.status(400).send({ status: false, message: `${req.body.email} Email Id  already registered.please,give email ID` })
       }
 
     }
