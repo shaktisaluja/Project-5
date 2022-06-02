@@ -26,7 +26,7 @@ router.put('/users/:userId/cart', authentication, authorization, updateCart)
 router.get('/users/:userId/cart', authentication, authorization, getCart)
 router.delete('/users/:userId/cart', authentication, authorization, delCart)
 
-//ordeer
+//order
 router.post("/users/:userId/orders",createOrder)
 router.put("/users/:userId/orders",putOrder)
 
