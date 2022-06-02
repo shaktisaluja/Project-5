@@ -27,8 +27,8 @@ router.get('/users/:userId/cart', authentication, authorization, getCart)
 router.delete('/users/:userId/cart', authentication, authorization, delCart)
 
 //order
-router.post("/users/:userId/orders",createOrder)
-router.put("/users/:userId/orders",putOrder)
+router.post("/users/:userId/orders",authentication,authorization,createOrder)
+router.put("/users/:userId/orders",authentication,authorization,putOrder)
 
 
 
