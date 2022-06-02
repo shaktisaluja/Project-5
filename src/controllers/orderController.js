@@ -1,6 +1,7 @@
 const cartModel = require("../models/cartModel")
 const orderModel = require("../models/orderModel")
-const userModel = require("../Models/userModel")
+// const userModel = require("../Models/userModel")
+const { userModel } = require("../Models/userModel")
 const { isValidBody, isValidObjectId } = require("../utilities/validation");
 
 
