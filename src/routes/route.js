@@ -9,7 +9,7 @@ const{createOrder,putOrder}=require("../controllers/orderController")
 //user Register
 router.post("/register", createUser)
 router.post('/login', login)
-router.get('/user/:userId/profile', authentication, getUserData)
+router.get('/user/:userId/profile', authentication, authorization,getUserData)
 router.put('/user/:userId/profile', authentication, authorization, updateUserById)
 
 //Product
@@ -20,14 +20,14 @@ router.put("/products/:productId", updateProduct)
 router.delete("/products/:productId", deleteProduct)
 
 //Cart
-router.post("/users/:userId/cart",authentication,authorization, createCart)
+router.post("/users/:userId/cart", createCart)
 router.put('/users/:userId/cart', authentication, authorization, updateCart)
 router.get('/users/:userId/cart', authentication, authorization, getCart)
 router.delete('/users/:userId/cart', authentication, authorization, delCart)
 
-//ordeer
+//order
 router.post("/users/:userId/orders",authentication,authorization,createOrder)
-router.put("/users/:userId/orders",putOrder)
+router.put("/users/:userId/orders",authentication,authorization,putOrder)
 
 
 
