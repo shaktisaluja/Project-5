@@ -98,7 +98,7 @@ const putOrder = async function (req, res) {
             return res.status(400).send({ status: false, msg: "This Order Cannot be cancellable !!!" });
         }
     } catch (err) {
-        res.status(500).send({ status: false, msg: err.message });
+        res.status(500).send({ status: false, msg: err });
     }
 };
 
