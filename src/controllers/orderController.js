@@ -1,6 +1,5 @@
 const cartModel = require("../models/cartModel")
 const orderModel = require("../models/orderModel")
-// const userModel = require("../Models/userModel")
 const { userModel } = require("../Models/userModel")
 const { isValidBody, isValidObjectId } = require("../utilities/validation");
 
@@ -10,6 +9,12 @@ const createOrder = async function (req, res) {
         let userId = req.params.userId
         if (!isValidObjectId(userId)) {
             return res.status(400).send({ status: false, message: "User Id is Not Valid" });
+        }
+
+        
+        const findUserDetails = await userModel.findOne({ _id: userId })
+        if (!findUserDetails) {
+            return res.status(404).send({ status: false, message: "User Not Found" });
         }
 
         let findCart = await cartModel.findOne({ userId: userId }).select({ _id: 0, createdAt: 0, updatedAt: 0, __v: 0 }).lean()

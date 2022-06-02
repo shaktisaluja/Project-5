@@ -196,7 +196,7 @@ const login = async function (req, res) {
 
     let token = jwt.sign(
       { "UserId": findemail._id },
-      process.env.SECRET_KEY, { expiresIn: '5h' }  //sectetkey
+      "7dfcdb28dc1cea52f80fd28dca4124530b260c8b8f6afe2bb07b68441189738d3e464339a279ee42f726a488f8efa4c3cf57570977cd6d1a108a9b3943215375", { expiresIn: '5h' }  //sectetkey
     );
 
     res.setHeader("x-api-key", token);
