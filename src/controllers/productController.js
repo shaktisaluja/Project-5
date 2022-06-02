@@ -10,11 +10,11 @@ const { uploadFile } = require('../utilities/uploadFile')
 const createProduct = async (req, res) => {
   try {
 
-    let data = JSON.parse(JSON.stringify(req.body))
-
-    if (!isValidBody(data)) {
+    if (!isValidBody(req.body)) {
       return res.status(400).send({ status: false, message: "Field can't not be empty.Please enter some details" });
     }
+    
+    let data = JSON.parse(JSON.stringify(req.body))
 
     let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments, isDeleted } = data
 
@@ -47,7 +47,7 @@ const createProduct = async (req, res) => {
     if (!price) {
       return res.status(400).send({ status: false, message: "Price Not Given" });
     }
-    
+
     if (!isValidNumber(price)) {
       return res.status(400).send({ status: false, message: "Invalid Price Format" });
     }
@@ -204,7 +204,9 @@ const updateProduct = async function (req, res) {
   try {
 
     const productId = req.params.productId
-
+    if (!isValidBody(req.body)) {
+      return res.status(400).send({ status: false, message: "Data must be given" })
+    }
     let data = JSON.parse(JSON.stringify(req.body))
 
     if (!isValidObjectId(productId)) {

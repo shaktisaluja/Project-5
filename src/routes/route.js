@@ -10,7 +10,7 @@ const{createOrder,putOrder}=require("../controllers/orderController")
 //user Register
 router.post("/register", createUser)
 router.post('/login', login)
-router.get('/user/:userId/profile', authentication, getUserData)
+router.get('/user/:userId/profile', authentication, authorization,getUserData)
 router.put('/user/:userId/profile', authentication, authorization, updateUserById)
 
 //Product
