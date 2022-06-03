@@ -185,9 +185,9 @@ const updateCart = async function (req, res) {
                         return res.status(200).send({ status: true, message: "Succescful", data: updateCart })
                     }
                 }
-                else if (removeProduct > 1 && removeProduct < 0 && isInteger(removeProduct)) {
+                else if (removeProduct > 1 || removeProduct < 0 || !isInteger(removeProduct)) {
 
-                    return res.status(400).send({ status: false, message: "Not a valid input" })
+                    return res.status(400).send({ status: false, message: "Remove product value can only be 0 or 1" })
                 }
                 else if (!removeProduct) {
 
