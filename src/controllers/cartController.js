@@ -24,7 +24,7 @@ const createCart = async function (req, res) {
         if (!isValidObjectId(productId)) {
             return res.status(400).send({ status: false, message: "Product Id is Not Valid" });
         }
-        
+
         if (cartId) {
 
             if (!isValidObjectId(cartId)) {
@@ -55,9 +55,9 @@ const createCart = async function (req, res) {
         }
 
         const findCart = await cartModel.findOne({ userId: userId })
-        
-    
-        
+
+
+
 
         let data = {
             userId: userId,
@@ -78,18 +78,18 @@ const createCart = async function (req, res) {
                 productId: productId,
                 quantity: quantity
             }
-            const itemsMatch =findCart.items
+            const itemsMatch = findCart.items
             const productMatch = itemsMatch.map(x => x.productId.toString())
             const index = productMatch.indexOf(productId)
 
-            const getCart =await cartModel.findById(cartId)
-            if(!getCart){
-              return res.status(404).send({ status:false, message: "Cart does not exist"})
+            const getCart = await cartModel.findById(cartId)
+            if (!getCart) {
+                return res.status(404).send({ status: false, message: "Cart does not exist" })
             }
 
 
             if (productMatch.includes(productId)) {
-                const updateCart = await cartModel.findOneAndUpdate({ userId: userId  }, { $inc: { [`items.${index}.quantity`]: quantity, totalPrice: price * quantity } }, { new: true })
+                const updateCart = await cartModel.findOneAndUpdate({ userId: userId }, { $inc: { [`items.${index}.quantity`]: quantity, totalPrice: price * quantity } }, { new: true })
                 return res.status(201).send({ status: true, message: "Success", data: updateCart })
             }
             else if (!productMatch.includes(productId)) {
@@ -102,12 +102,12 @@ const createCart = async function (req, res) {
         }
 
     } catch (err) {
-       return  res.status(500).send({ message: "Internal server error", Error: err.message })
+        return res.status(500).send({ message: "Internal server error", Error: err.message })
     }
 
-}  
+}
 
-   
+
 
 //**************PUT /users/:userId/cart (Remove product / Reduce a product's quantity from the cart) *******************************************
 
@@ -138,11 +138,12 @@ const updateCart = async function (req, res) {
         const cartId = getCart._id;
         let totalItems = getCart.totalItems;
         let totalPrice = getCart.totalPrice;
-        let  flag = false;
+        let flag = false;
+
         if (!getCart.items.length) return res.status(404).send({ status: true, message: "Cart is empty" })
 
         for (let i = 0; i < getCart.items.length; i++) {
-      
+
             if (getCart.items[i].productId == productId) {
                 flag = true;
 
@@ -151,7 +152,7 @@ const updateCart = async function (req, res) {
                 if (removeProduct == 0) {
 
                     if (productQuantity >= 1) {
-                        totalItems = totalItems -1
+                        totalItems = totalItems - 1
                         console.log(totalItems)
                         totalPrice = totalPrice - (productQuantity * productPrice)
 
@@ -167,7 +168,7 @@ const updateCart = async function (req, res) {
 
                     if (productQuantity > 1) {
 
-                        totalItems = totalItems 
+                        totalItems = totalItems
                         totalPrice = totalPrice - productPrice;
 
                         const updateCart = await cartModel.findOneAndUpdate({ _id: cartId }, { $inc: { [`items.${i}.quantity`]: -1 }, $set: { totalPrice: totalPrice, totalItems: totalItems } }, { new: true })
@@ -190,14 +191,14 @@ const updateCart = async function (req, res) {
                 }
                 else if (!removeProduct) {
 
-                    return res.status(400).send({ status: false, message: "No input to remove product" })
+                    return res.status(400).send({ status: true, message: "No input to remove product" })
                 }
 
 
             }
-             }
-             if(!flag) return res.status(404).send({ status: false, message:"Product Not found"})
-    
+        }
+        if (!flag) return res.status(404).send({ status: false, message: "Product Not found" })
+
 
 
     }
@@ -266,9 +267,9 @@ const delCart = async (req, res) => {
         if (!checkCart) {
             return res.status(404).send({ status: false, message: "Cart does Not Exist With This User" })
         }
-        if(checkCart.items.length == 0)
-        return res.status(404).send({ status: false, message: "Cart is empty" })
-    
+        if (checkCart.items.length == 0)
+            return res.status(404).send({ status: false, message: "Cart is empty" })
+
 
         let deleteCart = await cartModel.findOneAndUpdate({ userId: userId }, { items: [], totalPrice: 0, totalItems: 0 }, { new: true })
 
@@ -279,7 +280,6 @@ const delCart = async (req, res) => {
         return res.status(500).send({ status: false, message: error.message })
     }
 };
-
 
 
 

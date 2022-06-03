@@ -125,11 +125,19 @@ const createProduct = async (req, res) => {
 const getProduct = async function (req, res) {
 
   try {
+    
     let reqParams = req.query
+    let priceSort = req.query.priceSort
+
+    if (!priceSort) {
+      priceSort = 1;
+    } else if (priceSort) {
+      priceSort = priceSort
+    }
 
     if (!isValidBody(reqParams)) {
 
-      let findProduct = await productModel.find({ isDeleted: false }).sort({ price: 1 })
+      let findProduct = await productModel.find({ isDeleted: false }).sort({ price: priceSort })
 
       if (!isValidBody(findProduct)) return res.status(404).send({ status: false, message: "Product not found" })
 
@@ -164,7 +172,7 @@ const getProduct = async function (req, res) {
         filter["price"] = { $gt: Number(priceGreaterThan), $lt: Number(priceLessThan) }
       }
 
-      const filterProduct = await productModel.find(filter).sort({ price: 1 })
+      const filterProduct = await productModel.find(filter).sort({ price: priceSort })
       if (!isValidBody(filterProduct)) return res.status(404).send({ status: false, message: "Product not found" })
 
       return res.status(200).send({ status: true, message: "Success", data: filterProduct })
