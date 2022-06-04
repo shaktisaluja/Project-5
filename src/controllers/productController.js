@@ -159,7 +159,7 @@ const getProduct = async function (req, res) {
 
       if (name == "" || name) {
         if (!isValid(name)) return res.status(400).send({ status: false, message: "Not a valid name" })
-        filter["title"] = name;
+        filter["title"] = {$regex:name.toUpperCase()};
       }
 
       if (priceGreaterThan == "" || (priceGreaterThan && !priceLessThan)) {

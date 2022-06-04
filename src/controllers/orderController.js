@@ -11,7 +11,7 @@ const createOrder = async function (req, res) {
             return res.status(400).send({ status: false, message: "User Id is Not Valid" });
         }
 
-        
+
         const findUserDetails = await userModel.findOne({ _id: userId })
         if (!findUserDetails) {
             return res.status(404).send({ status: false, message: "User Not Found" });
@@ -28,7 +28,13 @@ const createOrder = async function (req, res) {
 
         let createdOrder = await orderModel.create(findCart)
 
-        return res.status(201).send({ status: true, message: "Order created successfully", data: createdOrder })
+        if (!createdOrder) return res.status(400).send({ status: false, message: "Order is not created, please place it again" })
+
+        await cartModel.findOneAndUpdate({ userId: userId }, { items: [], totalPrice: 0, totalItems: 0 })
+   
+        const findOrder = await orderModel.findOne({ _id: createdOrder._id }).populate('items.productId', { _id: 1, title: 1, price: 1, productImage: 1 });
+        
+        return res.status(201).send({ status: true, message: "Order created successfully", data: findOrder })
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message });
     }
@@ -83,7 +89,7 @@ const putOrder = async function (req, res) {
 
         if (orderFind.cancellable == true) {
             if (orderFind.status == "pending") {
-                const updateStatus = await orderModel.findOneAndUpdate({ _id: orderId }, { status: status }, { new: true });
+                const updateStatus = await orderModel.findOneAndUpdate({ _id: orderId }, { status: status }, { new: true }).populate('items.productId', { _id: 1, title: 1, price: 1, productImage: 1 });
                 if (!updateStatus) {
                     return res.status(400).send({ status: false, message: "Wont's able to change status " });
                 }
@@ -101,7 +107,21 @@ const putOrder = async function (req, res) {
 
 
         if (orderFind.cancellable == false) {
-            return res.status(400).send({ status: false, message: "This Order Cannot be cancellable " });
+
+            if (orderFind.status == "pending" && status != "cancelled") {
+                const updateStatus = await orderModel.findOneAndUpdate({ _id: orderId }, { status: status }, { new: true }).populate('items.productId', { _id: 1, title: 1, price: 1, productImage: 1 });
+                if (!updateStatus) {
+                    return res.status(400).send({ status: false, message: "Won't able to change status " });
+                }
+
+                return res.status(200).send({ status: true, message: "Order updated successfully", data: updateStatus });
+            }
+
+            if (orderFind.status == "completed") {
+                return res.status(400).send({ status: false, message: "Order is already completed, won't able to change status" });
+            }
+
+            return res.status(400).send({ status: false, message: "This order is not cancellable" });
         }
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message });

@@ -196,11 +196,11 @@ const login = async function (req, res) {
 
     let token = jwt.sign(
       { "UserId": findemail._id },
-      "7dfcdb28dc1cea52f80fd28dca4124530b260c8b8f6afe2bb07b68441189738d3e464339a279ee42f726a488f8efa4c3cf57570977cd6d1a108a9b3943215375", { expiresIn: '5h' }  //sectetkey
+      "7dfcdb28dc1cea52f80fd28dca4124530b260c8b8f6afe2bb07b68441189738d3e464339a279ee42f726a488f8efa4c3cf57570977cd6d1a108a9b3943215375", { expiresIn: '5h' }  //secretkey
     );
 
 
-    return res.status(200).send({ status: true, message: "User login successfull", data: token });
+    return res.status(200).send({ status: true, message: "User login successfull", data: { userId: findemail._id, token: token } });
   }
 
   catch (err) {
@@ -249,8 +249,6 @@ const updateUserById = async function (req, res) {
     const userId = req.params.userId;
     let files = req.files
     let data = JSON.parse(JSON.stringify(req.body))
-    console.log(data)
-
 
     if (!userId) {
       return res.status(400).send({ status: false, message: "Please Provide UserId" });
@@ -300,73 +298,75 @@ const updateUserById = async function (req, res) {
 
     }
 
-    if (req.body.phone) {
-      findUserDetails.phone = req.body.phone
+    if (data.phone) {
+      findUserDetails.phone = data.phone
 
       //Phone no. validation by Rejex
       if (!validateNumber(findUserDetails.phone)) {
         return res.status(400).send({ status: false, message: "Invaild Phone No.." });
       }
 
-      const findphoneno = await userModel.findOne({ phone: req.body.phone });
+      const findphoneno = await userModel.findOne({ phone: data.phone });
 
       if (findphoneno) {
-        return res.status(400).send({ status: false, message: `${req.body.phone} Phone no. Already Registered.Please,Give Another Phone.no` })
+        return res.status(400).send({ status: false, message: `${data.phone} Phone no. Already Registered.Please,Give Another Phone.no` })
       }
     }
-    if (req.body.password) {
-      findUserDetails.password = req.body.password
+    if (data.password) {
+      findUserDetails.password = data.password
 
       if (!validatePassword(findUserDetails.password)) {
         return res.status(400).send({ status: false, message: "Password Must contain at-least One number,One special character,One capital letter & length Should be 8-15", }); //password validation
       }
-      findUserDetails.password = bcrypt.hashSync(req.body.password, 10);
+      findUserDetails.password = bcrypt.hashSync(data.password, 10);
 
     }
 
-    if (req.body.address) {
-      if (req.body.address.shipping) {
-        if (req.body.address.shipping.street) {
-          findUserDetails.address.shipping.street = req.body.address.shipping.street
+    data.address = JSON.parse(data.address)
+
+    if (data.address) {
+      if (data.address.shipping) {
+        if (data.address.shipping.street) {
+          findUserDetails.address.shipping.street = data.address.shipping.street
           if (!validateStreet(findUserDetails.address.shipping.street)) {
             return res.status(400).send({ status: false, message: "Street must contain Alphabet or Number", });
           }
 
 
         }
-        if (req.body.address.shipping.city) {
-          findUserDetails.address.shipping.city = req.body.address.shipping.city
+        if (data.address.shipping.city) {
+          findUserDetails.address.shipping.city = data.address.shipping.city
           if (!validateFeild(findUserDetails.address.shipping.city)) {
             return res.status(400).send({ status: false, message: "Invalid City!It should not contain number" });
           }
 
         }
-        if (req.body.address.shipping.pincode) {
-          findUserDetails.address.shipping.pincode = req.body.address.shipping.pincode
+        if (data.address.shipping.pincode) {
+          findUserDetails.address.shipping.pincode = data.address.shipping.pincode
 
           if (!validatePincode(findUserDetails.address.shipping.pincode)) {
             return res.status(400).send({ status: false, message: "Invalid Pincode", });
           }
         }
       }
-      if (req.body.address.billing) {
-        if (req.body.address.billing.street) {
-          findUserDetails.address.billing.street = req.body.address.billing.street
+      if (data.address.billing) {
+        if (data.address.billing.street) {
+          findUserDetails.address.billing.street = data.address.billing.street
 
           if (!validateStreet(findUserDetails.address.billing.street)) {
             return res.status(400).send({ status: false, message: "Invalid Street!", });
           }
 
         }
-        if (req.body.address.billing.city) {
-          findUserDetails.address.billing.city = req.body.address.billing.city
+        if (data.address.billing.city) {
+          findUserDetails.address.billing.city = data.address.billing.city
           if (!validateFeild(findUserDetails.address.billing.city)) {
             return res.status(400).send({ status: false, message: "Invalid City!It should not contain number", });
           }
 
         }
-        if (req.body.address.billing.pincode) {
-          findUserDetails.address.billing.pincode = req.body.address.billing.pincode
+        if (data.address.billing.pincode) {
+          findUserDetails.address.billing.pincode = data.address.billing.pincode
 
           if (!validatePincode(findUserDetails.address.billing.pincode)) {
             return res.status(400).send({ status: false, message: "Invalid Pincode", });
